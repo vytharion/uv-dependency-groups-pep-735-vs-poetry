@@ -1,3 +1,12 @@
+from groupcompare.ci_workflows import (
+    dev_group_sync_command,
+    isolated_install_uses_no_default_groups,
+    matrix_groups,
+    per_group_sync_command,
+    tool_command_for_group,
+    workflow_exists,
+    workflow_text,
+)
 from groupcompare.core import describe_layout
 from groupcompare.lock_compare import (
     packages_in_both,
@@ -33,6 +42,9 @@ __all__ = [
     "declared_groups",
     "describe_layout",
     "dev_dependencies",
+    "dev_group_sync_command",
+    "isolated_install_uses_no_default_groups",
+    "matrix_groups",
     "packages_in_both",
     "packages_only_in_poetry",
     "packages_only_in_uv",
@@ -42,6 +54,7 @@ __all__ = [
     "pep735_groups",
     "pep735_resolve_group",
     "pep735_resolved_group_names",
+    "per_group_sync_command",
     "poetry_lock_is_hashed",
     "poetry_lock_packages",
     "poetry_lock_pins_are_exact",
@@ -49,10 +62,13 @@ __all__ = [
     "project_name",
     "python_constraint",
     "runtime_dependencies",
+    "tool_command_for_group",
     "uv_lock_is_hashed",
     "uv_lock_packages",
     "uv_lock_versions",
     "version_disagreements",
+    "workflow_exists",
+    "workflow_text",
 ]
 
 __version__ = "0.1.0"

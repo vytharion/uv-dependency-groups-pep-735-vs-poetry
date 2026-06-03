@@ -1,0 +1,75 @@
+name: groupcompare CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  group-install:
+    name: Install only --group ${{ matrix.group }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [test, lint, docs]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.27"
+          enable-cache: true
+
+      - name: Pin the Python interpreter
+        run: uv python install 3.12
+
+      - name: Install only the ${{ matrix.group }} dependency-group
+        run: uv sync --group ${{ matrix.group }} --no-default-groups
+
+      - name: Exercise the ${{ matrix.group }} group's tooling
+        run: |
+          case "${{ matrix.group }}" in
+            test)
+              uv run --no-sync pytest -q
+              ;;
+            lint)
+              uv run --no-sync ruff check src tests
+              ;;
+            docs)
+              uv run --no-sync mkdocs --version
+              ;;
+            *)
+              echo "Unknown group: ${{ matrix.group }}" >&2
+              exit 1
+              ;;
+          esac
+
+  dev-install:
+    name: Install the composed dev group
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.27"
+          enable-cache: true
+
+      - name: Pin the Python interpreter
+        run: uv python install 3.12
+
+      - name: Install the composed dev group via include-group
+        run: uv sync --group dev --no-default-groups
+
+      - name: Confirm every tool from test + lint + docs is on PATH
+        run: |
+          uv run --no-sync pytest --version
+          uv run --no-sync ruff --version
+          uv run --no-sync mypy --version
+          uv run --no-sync mkdocs --version
