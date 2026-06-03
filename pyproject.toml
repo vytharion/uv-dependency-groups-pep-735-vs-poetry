@@ -15,7 +15,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = []
+dependencies = [
+    "tomli>=2.0; python_version < '3.11'",
+]
 
 [build-system]
 requires = ["hatchling>=1.18"]
@@ -23,6 +25,23 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/groupcompare"]
+
+[tool.poetry]
+name = "groupcompare"
+version = "0.1.0"
+description = "Minimal Python package used to compare Poetry's [tool.poetry.group.*] layout against PEP 735 [dependency-groups] under uv."
+authors = ["vytharion <vytharion@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{ include = "groupcompare", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+tomli = { version = "^2.0", python = "<3.11" }
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+ruff = "^0.6"
+mypy = "^1.10"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
