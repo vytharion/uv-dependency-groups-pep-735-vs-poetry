@@ -1,0 +1,31 @@
+[project]
+name = "groupcompare"
+version = "0.1.0"
+description = "Minimal Python package used to compare Poetry's [tool.poetry.group.*] layout against PEP 735 [dependency-groups] under uv."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "vytharion", email = "vytharion@users.noreply.github.com" },
+]
+keywords = ["uv", "poetry", "pep-735", "dependency-groups", "packaging"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = []
+
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/groupcompare"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config"]
