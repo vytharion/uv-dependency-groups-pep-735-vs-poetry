@@ -8,6 +8,18 @@ from groupcompare.ci_workflows import (
     workflow_text,
 )
 from groupcompare.core import describe_layout
+from groupcompare.migrate import (
+    ChecklistItem,
+    caret_to_pep440,
+    checklist_passes,
+    checklist_report,
+    migrate_group,
+    migrate_groups,
+    poetry_to_pep508,
+    render_dependency_groups,
+    tilde_to_pep440,
+    verification_checklist,
+)
 from groupcompare.lock_compare import (
     packages_in_both,
     packages_only_in_poetry,
@@ -38,13 +50,19 @@ from groupcompare.poetry_layout import (
 )
 
 __all__ = [
+    "ChecklistItem",
     "__version__",
+    "caret_to_pep440",
+    "checklist_passes",
+    "checklist_report",
     "declared_groups",
     "describe_layout",
     "dev_dependencies",
     "dev_group_sync_command",
     "isolated_install_uses_no_default_groups",
     "matrix_groups",
+    "migrate_group",
+    "migrate_groups",
     "packages_in_both",
     "packages_only_in_poetry",
     "packages_only_in_uv",
@@ -59,13 +77,17 @@ __all__ = [
     "poetry_lock_packages",
     "poetry_lock_pins_are_exact",
     "poetry_lock_versions",
+    "poetry_to_pep508",
     "project_name",
     "python_constraint",
+    "render_dependency_groups",
     "runtime_dependencies",
+    "tilde_to_pep440",
     "tool_command_for_group",
     "uv_lock_is_hashed",
     "uv_lock_packages",
     "uv_lock_versions",
+    "verification_checklist",
     "version_disagreements",
     "workflow_exists",
     "workflow_text",
