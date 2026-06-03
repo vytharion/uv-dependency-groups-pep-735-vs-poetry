@@ -2,7 +2,10 @@ from groupcompare.core import describe_layout
 from groupcompare.pep735_layout import (
     pep735_dev_dependencies,
     pep735_dev_dependency_names,
+    pep735_group_items,
     pep735_groups,
+    pep735_resolve_group,
+    pep735_resolved_group_names,
     project_name,
 )
 from groupcompare.poetry_layout import (
@@ -19,7 +22,10 @@ __all__ = [
     "dev_dependencies",
     "pep735_dev_dependencies",
     "pep735_dev_dependency_names",
+    "pep735_group_items",
     "pep735_groups",
+    "pep735_resolve_group",
+    "pep735_resolved_group_names",
     "project_name",
     "python_constraint",
     "runtime_dependencies",

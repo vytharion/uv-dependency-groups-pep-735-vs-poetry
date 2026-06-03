@@ -1,9 +1,11 @@
 """Read the PEP 735 [dependency-groups] table out of pyproject.toml.
 
-Step 3 mirrors the dev tooling from [tool.poetry.group.dev.dependencies]
-into a top-level [dependency-groups] table. These helpers parse the
-PEP 735 dialect so the test suite can prove the two views agree on
-which packages belong to the dev group.
+Step 4 splits the single dev group into test / lint / docs and lets the
+top-level `dev` group compose them via the PEP 735 `include-group`
+directive. The helpers here parse the raw table, expose per-group
+readers, and resolve `include-group` references recursively so callers
+can ask "what does `dev` actually install?" without re-implementing the
+spec.
 """
 
 from __future__ import annotations
@@ -11,7 +13,7 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
-from typing import Any, List, Mapping, Optional
+from typing import Any, Iterable, List, Mapping, Optional, Set
 
 if sys.version_info >= (3, 11):
     import tomllib as _toml
@@ -38,8 +40,42 @@ def pep735_groups(path: Optional[Path] = None) -> List[str]:
     return sorted(_dependency_groups_table(path).keys())
 
 
+def pep735_group_items(name: str, path: Optional[Path] = None) -> List[Any]:
+    return list(_dependency_groups_table(path).get(name, []))
+
+
+def _resolve_item(
+    table: Mapping[str, Any], item: Any, seen: Set[str]
+) -> List[str]:
+    if isinstance(item, str):
+        return [item]
+    if isinstance(item, dict) and "include-group" in item:
+        return _resolve(table, item["include-group"], seen)
+    raise ValueError(f"unrecognised dependency-groups entry: {item!r}")
+
+
+def _resolve(
+    table: Mapping[str, Any], name: str, seen: Set[str]
+) -> List[str]:
+    if name in seen:
+        raise ValueError(f"include-group cycle detected at {name!r}")
+    if name not in table:
+        raise KeyError(f"undefined dependency group: {name!r}")
+    next_seen = seen | {name}
+    resolved: List[str] = []
+    for item in table[name]:
+        resolved.extend(_resolve_item(table, item, next_seen))
+    return resolved
+
+
+def pep735_resolve_group(
+    name: str, path: Optional[Path] = None
+) -> List[str]:
+    return _resolve(_dependency_groups_table(path), name, set())
+
+
 def pep735_dev_dependencies(path: Optional[Path] = None) -> List[str]:
-    return list(_dependency_groups_table(path).get("dev", []))
+    return pep735_resolve_group("dev", path)
 
 
 def project_name(requirement: str) -> str:
@@ -49,5 +85,15 @@ def project_name(requirement: str) -> str:
     return match.group(0)
 
 
+def _names(specs: Iterable[str]) -> List[str]:
+    return sorted(project_name(spec) for spec in specs)
+
+
 def pep735_dev_dependency_names(path: Optional[Path] = None) -> List[str]:
-    return sorted(project_name(spec) for spec in pep735_dev_dependencies(path))
+    return _names(pep735_dev_dependencies(path))
+
+
+def pep735_resolved_group_names(
+    name: str, path: Optional[Path] = None
+) -> List[str]:
+    return _names(pep735_resolve_group(name, path))

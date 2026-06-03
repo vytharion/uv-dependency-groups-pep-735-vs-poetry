@@ -38,16 +38,41 @@ packages = [{ include = "groupcompare", from = "src" }]
 python = "^3.9"
 tomli = { version = "^2.0", python = "<3.11" }
 
+[tool.poetry.group.test.dependencies]
+pytest = "^8.0"
+
+[tool.poetry.group.lint.dependencies]
+ruff = "^0.6"
+mypy = "^1.10"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6"
+
+# Poetry has no equivalent of PEP 735 `include-group`, so the dev group
+# must redundantly enumerate every tool from test + lint + docs. Any new
+# tool added to a sub-group has to be hand-copied here or `poetry install
+# --with dev` silently drifts from the PEP 735 view.
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
 ruff = "^0.6"
 mypy = "^1.10"
+mkdocs = "^1.6"
 
 [dependency-groups]
-dev = [
+test = [
     "pytest>=8.0,<9.0",
+]
+lint = [
     "ruff>=0.6,<0.7",
     "mypy>=1.10,<2.0",
+]
+docs = [
+    "mkdocs>=1.6,<2.0",
+]
+dev = [
+    { include-group = "test" },
+    { include-group = "lint" },
+    { include-group = "docs" },
 ]
 
 [tool.pytest.ini_options]
